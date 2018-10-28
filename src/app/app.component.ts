@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GithubService } from './github.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'admin';
+
+  constructor(private github: GithubService){
+    this.github.get('/README.md').subscribe ( (data) => {
+      console.log(data);
+      
+    });
+  }
 }
