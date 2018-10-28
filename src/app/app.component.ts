@@ -10,9 +10,12 @@ export class AppComponent {
   title = 'admin';
 
   constructor(private github: GithubService){
-    this.github.get('/README.md').subscribe ( (data) => {
-      console.log(data);
-      
-    });
+    // this.github.get('/README.md').subscribe ( (data) => {
+    //   console.log(data);
+    // });
+
+    let r = this.github.set('/README.md', 'que beleza!');
+    console.log(r);
+
   }
 }
