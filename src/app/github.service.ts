@@ -9,7 +9,7 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class GithubService {
 
-  apiRoot = 'https://api.github.com/repos/psichelp/gestao/contents'
+  apiRoot = 'https://api.github.com/repos/psichelp/app/contents'
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -28,6 +28,15 @@ export class GithubService {
       }));
   }
 
+  raw(filePath): Observable<any> {
+    let apiUrl = `https://raw.githubusercontent.com/psichelp/app/master/src/assets/data/${filePath}.json`;
+    return this.http.get(apiUrl)
+      .pipe(map(res => {
+        let results = res;
+        return results;
+      }));
+  }
+
   b64EncodeUnicode(str) {
     // first we use encodeURIComponent to get percent-encoded UTF-8,
     // then we convert the percent encodings into raw bytes which
@@ -39,47 +48,60 @@ export class GithubService {
       }));
   }
 
-  set(filePath, contents) {
+  b64DecodeUnicode(str) {
+    // Going backwards: from bytestream, to percent-encoding, to original string.
+    return atob(str);
 
+    // return decodeURIComponent(atob(str).split('').map(function(c) {
+    //     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    // }).join(''));
+  }
+
+  create(filePath, contents) {
+    let apiUrl = `${this.apiRoot}${filePath}`;
     contents = this.b64EncodeUnicode(contents)
+    let body = {
+      "message": "Automatic create commit",
+      "content": contents
+    }
+    this.http.put(apiUrl, body, this.httpOptions)
+      .pipe(map(res => {
+        let results = res;
+        return results;
+      }))
+      .subscribe((data) => {
+        console.log(data);
+      });
+  }
 
+  update(filePath, contents, sha) {
+    let apiUrl = `${this.apiRoot}${filePath}`;
+    contents = this.b64EncodeUnicode(contents)
+    let body = {
+      "message": "Automatic update commit",
+      "content": contents,
+      "sha": sha
+    }
+    this.http.put(apiUrl, body, this.httpOptions)
+      .pipe(map(res => {
+        let results = res;
+        return results;
+      }))
+      .subscribe((data) => {
+        console.log(data);
+      });
+  }
+
+  set(filePath, contents) {
     this.get(filePath).subscribe((data) => {
-      let sha = data.sha;
-      let apiUrl = `${this.apiRoot}${filePath}`;
-      let body = {
-        "message": "Commit automático",
-        "content": contents,
-        "sha": sha
-      }
-      console.log(body);
-      // Atualiza um arquivo existente
-      this.http.put(apiUrl, body, this.httpOptions)
-        .pipe(map(res => {
-          let results = res;
-          return results;
-        }))
-        .subscribe((data) => {
-          console.log(data);
-        });
+      this.update(filePath, contents, data.sha)
     },
       error => {
-        let body = {
-          "message": "Commit automático",
-          "content": contents
-        }
-        let apiUrl = `${this.apiRoot}${filePath}`;
-        // Cria um novo arquivo
-        this.http.put(apiUrl, body, this.httpOptions)
-          .pipe(map(res => {
-            let results = res;
-            return results;
-          }))
-          .subscribe((data) => {
-            console.log(data);
-          });
+        this.create(filePath, contents)
       }
     );
   }
+
 }
 
 

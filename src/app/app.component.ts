@@ -12,8 +12,8 @@ export class AppComponent {
 
   constructor(private github: GithubService, private dengodb: DengodbService){
 
-    // let r = this.github.set('/zzz', 'que beleza!');
-    let r = this.dengodb.insert('/zzz');
+    //  let r = this.github.set('/app/src/assets/data/test.json', '[]');
+    let r = this.dengodb.insert({msg: "oi danado rapaaaaaz"}, 'test');
     
     console.log(r);
 
