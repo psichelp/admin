@@ -3,17 +3,24 @@ import { Observable } from 'rxjs';
 import { map } from "rxjs/operators";
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
+import { Base64 } from 'js-base64';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class GithubService {
 
+  token(): String{
+    let encToken = "ZTIyODhkYTJlY2VhNjE0NjM4NjYyMWRiNjllYzQzYzAyN2RkMzg1YQ==";
+    return Base64.decode(encToken);
+  } 
+
   apiRoot = 'https://api.github.com/repos/psichelp/app/contents'
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': 'token 6df2c789a6db973d0cbd05671bfae82efffe7f9d'
+      'Authorization': 'token ' + this.token()
     })
   };
 
@@ -50,11 +57,10 @@ export class GithubService {
 
   b64DecodeUnicode(str) {
     // Going backwards: from bytestream, to percent-encoding, to original string.
-    return atob(str);
 
-    // return decodeURIComponent(atob(str).split('').map(function(c) {
-    //     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    // }).join(''));
+    return decodeURIComponent(atob(str).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
   }
 
   create(filePath, contents) {

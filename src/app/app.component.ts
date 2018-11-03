@@ -11,11 +11,7 @@ export class AppComponent {
   title = 'admin';
 
   constructor(private github: GithubService, private dengodb: DengodbService){
-
-    //  let r = this.github.set('/app/src/assets/data/test.json', '[]');
-    let r = this.dengodb.insert({msg: "oi danado rapaaaaaz"}, 'test');
-    
+    let r = this.dengodb.insert(Date().toLocaleString(), 'test');
     console.log(r);
-
   }
 }

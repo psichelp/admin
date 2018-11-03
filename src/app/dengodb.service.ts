@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GithubService } from './github.service';
+import { Base64 } from 'js-base64';
 
 @Injectable({
   providedIn: 'root'
@@ -27,12 +28,11 @@ export class DengodbService {
   public insert(value, file) {
     this.github.get(`/src/assets/data/${file}.json`).subscribe(data => {
       console.log('rawData', data);
-      this.github.raw(file).subscribe(rawData => {
-        console.log('rawData', rawData);
-        let contents = rawData;
-        contents.push(value);
-        this.github.update(`/src/assets/data/${file}.json`, JSON.stringify(contents), data.sha)
-      });
+      console.log("Conteúdo antes", Base64.decode((data.content)));
+      let contents = JSON.parse(Base64.decode((data.content)));
+      contents.push(value);
+      console.log("Conteúdo depois", contents);
+      this.github.update(`/src/assets/data/${file}.json`, JSON.stringify(contents, null, "  "), data.sha)
     });
   }
 
